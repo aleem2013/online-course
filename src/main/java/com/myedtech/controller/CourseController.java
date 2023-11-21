@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,9 +38,8 @@ public class CourseController {
 
             return new ResponseEntity(result, HttpStatus.CREATED);
         } catch (Exception e) {
-
-        }
-        return new ResponseEntity<>(HttpStatus.BAD_GATEWAY);
+           return new ResponseEntity<>(HttpStatus.BAD_GATEWAY); 
+        }        
     }
 
     @GetMapping
@@ -50,8 +50,8 @@ public class CourseController {
             return new ResponseEntity<Object>(dtos, HttpStatus.OK);
         } catch (Exception e) {
             System.out.println(e.getMessage());
-        }
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }        
     }
 
     @GetMapping("/get/{courseid}")
@@ -61,16 +61,10 @@ public class CourseController {
         try {
             Course course = courseService.getCourseById(id);
             return new ResponseEntity<Object>(course, HttpStatus.OK);
-            // CourseDto dto = new CourseDto();
-            // dto.setCategoryId(id);
-            // CourseDto result = courseService.getCourseByCourseDto(dto);
-            //return new ResponseEntity<Object>(result, HttpStatus.OK);
         } catch (Exception e) {
             System.out.println(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		//  List<CourseDto> dtos = courseService.getCourseById(id);
-		// return new ResponseEntity<Course>(course,HttpStatus.OK);
 	}
 
     @PostMapping("/update")
@@ -82,26 +76,24 @@ public class CourseController {
             result.put("id", String.valueOf(id));
             result.put("msg", "updated successfully");
 
-            return new ResponseEntity(result, HttpStatus.OK);
+            return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {
-
-        }
-        return new ResponseEntity<>(HttpStatus.BAD_GATEWAY);
+            return new ResponseEntity<>(HttpStatus.BAD_GATEWAY);
+        }        
     }
 
-    @PostMapping("/delete")
+    @DeleteMapping("/delete/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity deleteCourse(@RequestBody CourseDto course) {
+    public ResponseEntity deleteCourse(@PathVariable int id) {
         try {
-            int id = courseService.deleteCourseById(course.getCategoryId());
+            courseService.deleteCourseById(id);
             Map<String, String> result = new HashMap<>();
             result.put("id", String.valueOf(id));
             result.put("msg", "deleted successfully");
 
-            return new ResponseEntity(result, HttpStatus.OK);
+            return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {
-
-        }
-        return new ResponseEntity<>(HttpStatus.BAD_GATEWAY);
+            return new ResponseEntity<>(HttpStatus.BAD_GATEWAY);
+        }        
     }
 }

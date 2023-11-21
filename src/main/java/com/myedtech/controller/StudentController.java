@@ -4,7 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,11 +39,10 @@ public class StudentController {
             result.put("id", String.valueOf(id));
             result.put("msg", "Student registerd successfully");
 
-            return new ResponseEntity(result, HttpStatus.CREATED);
+            return new ResponseEntity<>(result, HttpStatus.CREATED);
         } catch (Exception e) {
-
-        }
-        return new ResponseEntity<>(HttpStatus.BAD_GATEWAY);
+            return new ResponseEntity<>(HttpStatus.BAD_GATEWAY);
+        }        
     }
 
     @GetMapping("/get/all")
@@ -51,16 +52,10 @@ public class StudentController {
         try {
             List<Student> students = studentService.getAllStudentsWithCourses();
             return new ResponseEntity<Object>(students, HttpStatus.OK);
-            // CourseDto dto = new CourseDto();
-            // dto.setCategoryId(id);
-            // CourseDto result = courseService.getCourseByCourseDto(dto);
-            //return new ResponseEntity<Object>(result, HttpStatus.OK);
         } catch (Exception e) {
             System.out.println(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		//  List<CourseDto> dtos = courseService.getCourseById(id);
-		// return new ResponseEntity<Course>(course,HttpStatus.OK);
 	}
 
     // @GetMapping("/get/{courseid}")
@@ -82,20 +77,19 @@ public class StudentController {
 	// 	// return new ResponseEntity<Course>(course,HttpStatus.OK);
 	// }
 
-    @PostMapping("/delete")
+    @DeleteMapping("/delete/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity deleteStudent(@RequestBody StudentDto student) {
+    public ResponseEntity deleteStudent(@PathVariable int id) {
         try {
-            int id = studentService.deleteStudentById(student.getId());
+            studentService.deleteStudentById(id);
             Map<String, String> result = new HashMap<>();
             result.put("id", String.valueOf(id));
             result.put("msg", "Student record deleted successfully");
 
-            return new ResponseEntity(result, HttpStatus.OK);
+            return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {
-
-        }
-        return new ResponseEntity<>(HttpStatus.BAD_GATEWAY);
+            return new ResponseEntity<>(HttpStatus.BAD_GATEWAY);
+        }        
     }
 
     @PostMapping("/update")
@@ -107,10 +101,9 @@ public class StudentController {
             result.put("id", String.valueOf(id));
             result.put("msg", "Student course details updated successfully");
 
-            return new ResponseEntity(result, HttpStatus.OK);
+            return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {
-
-        }
-        return new ResponseEntity<>(HttpStatus.BAD_GATEWAY);
+            return new ResponseEntity<>(HttpStatus.BAD_GATEWAY);
+        }        
     }
 }
